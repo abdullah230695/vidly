@@ -1,4 +1,4 @@
-const _ = require("lodash");
+const lodash = require("lodash");
 const { Users, validate } = require("../models/users");
 const mongoose = require("mongoose");
 const express = require("express");
@@ -13,19 +13,15 @@ router.post("/", async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  let user = Users.findOne({ email: req.body.email });
+  // let user = Users.where({ email: req.body.email });
 
-  console.log("users : ", user.);
-  if (user) return res.status(400).send("email already registered");
+  // console.log("users : ", user);
+  // if (user) return res.status(400).send("email already registered");
 
-  let users = new Users({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-  });
-  users = await users.save();
+  let users = new Users(lodash.pick(req.body, ["name", "email", "password"]));
+  await users.save();
 
-  res.send(_.pick("users", ["name,email"]));
+  res.send(lodash.pick(users, ["name", "email"]));
 });
 
 router.put("/:id", async (req, res) => {
