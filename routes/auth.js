@@ -1,7 +1,9 @@
+const jwt = require("jsonwebtoken");
+const Joi = require("joi");
 const bcrypt = require("bcrypt");
 const lodash = require("lodash");
-const { Users, validate } = require("../models/users");
-const mongoose = require("mongoose");
+const { Users } = require("../models/users");
+
 const express = require("express");
 const router = express.Router();
 
@@ -14,17 +16,17 @@ router.post("/", async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  let user = await Users.findOne({ email: req.body.email });
+  const user = await Users.findOne({ email: req.body.email });
 
   console.log("users : ", user);
-  if (user) return res.status(400).send("email already registered");
+  if (!user) return res.status(400).send("Incorrect username or password");
 
-  let users = new Users(lodash.pick(req.body, ["name", "email", "password"]));
-  const salt = await bcrypt.genSalt(10);
-  users.password = await bcrypt.hash(users.password, salt);
-  await users.save();
+  const isMatched = await bcrypt.compare(req.body.password, user.password);
 
-  res.send(lodash.pick(users, ["name", "email"]));
+  if (!isMatched) return res.status(400).send("Incorrect username or password");
+
+  const token = jwt.sign({ _id: user.id }, process.env.jwtPrivateKey);
+  res.send(token);
 });
 
 router.put("/:id", async (req, res) => {
@@ -68,5 +70,14 @@ router.get("/:id", async (req, res) => {
 
   res.send(customer);
 });
+
+function validate(req) {
+  const schema = {
+    email: Joi.string().min(5).max(255).required().email(),
+    password: Joi.string().min(5).max(1024).required(),
+  };
+
+  return Joi.validate(req, schema);
+}
 
 module.exports = router;
