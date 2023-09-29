@@ -1,7 +1,5 @@
-const jwt = require("jsonwebtoken");
 const Joi = require("joi");
 const bcrypt = require("bcrypt");
-const lodash = require("lodash");
 const { Users } = require("../models/users");
 
 const express = require("express");
@@ -25,8 +23,7 @@ router.post("/", async (req, res) => {
 
   if (!isMatched) return res.status(400).send("Incorrect username or password");
 
-  const token = jwt.sign({ _id: user.id }, process.env.jwtPrivateKey);
-  res.send(token);
+  res.send(user.id);
 });
 
 router.put("/:id", async (req, res) => {

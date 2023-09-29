@@ -1,30 +1,35 @@
+const jwt = require("jsonwebtoken");
 const Joi = require("joi");
 const mongoose = require("mongoose");
 
-const Users = mongoose.model(
-  "Users",
-  new mongoose.Schema({
-    name: {
-      type: String,
-      required: true,
-      minlength: 5,
-      maxlength: 50,
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      minlength: 5,
-      maxlength: 255,
-    },
-    password: {
-      type: String,
-      required: true,
-      minlength: 5,
-      maxlength: 1024,
-    },
-  })
-);
+const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    minlength: 5,
+    maxlength: 50,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    minlength: 5,
+    maxlength: 255,
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 5,
+    maxlength: 1024,
+  },
+});
+
+userSchema.methods.generateToken = function () {
+  return jwt.sign({ _id: this.id }, process.env.jwtPrivateKey);
+
+};
+
+const Users = mongoose.model("Users", userSchema);
 
 function validateUsers(users) {
   const schema = {

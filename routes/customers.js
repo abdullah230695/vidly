@@ -1,7 +1,9 @@
 const { Customer, validate } = require("../models/customer");
-const mongoose = require("mongoose");
+const authMiddleware = require("../middleware/auth");
 const express = require("express");
 const router = express.Router();
+
+router.use(authMiddleware);
 
 router.get("/", async (req, res) => {
   const customers = await Customer.find().sort("name");

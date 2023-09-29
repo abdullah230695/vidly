@@ -1,9 +1,11 @@
 const bcrypt = require("bcrypt");
 const lodash = require("lodash");
 const { Users, validate } = require("../models/users");
-const mongoose = require("mongoose");
 const express = require("express");
 const router = express.Router();
+const authMiddleware = require("../middleware/auth");
+
+router.use(authMiddleware);
 
 router.get("/", async (req, res) => {
   const customers = await Users.find().sort("name");
@@ -24,6 +26,7 @@ router.post("/", async (req, res) => {
   users.password = await bcrypt.hash(users.password, salt);
   await users.save();
 
+  res.header("x-auth-token", users.generateToken());
   res.send(lodash.pick(users, ["name", "email"]));
 });
 
