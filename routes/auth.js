@@ -1,13 +1,14 @@
 const Joi = require("joi");
 const bcrypt = require("bcrypt");
 const { Users } = require("../models/users");
+const auth = require("../middleware/auth");
 
 const express = require("express");
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-  const customers = await Users.find().sort("name");
-  res.send(customers);
+  const user = await Users.find().sort("name");
+  res.send(user);
 });
 
 router.post("/", async (req, res) => {

@@ -5,11 +5,9 @@ const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middleware/auth");
 
-router.use(authMiddleware);
-
-router.get("/", async (req, res) => {
-  const customers = await Users.find().sort("name");
-  res.send(customers);
+router.get("/me", authMiddleware, async (req, res) => {
+  const user = await Users.findById(req.user._id).select("-password");
+  res.send(user);
 });
 
 router.post("/", async (req, res) => {
@@ -21,7 +19,9 @@ router.post("/", async (req, res) => {
   console.log("users : ", user);
   if (user) return res.status(400).send("email already registered");
 
-  let users = new Users(lodash.pick(req.body, ["name", "email", "password"]));
+  let users = new Users(
+    lodash.pick(req.body, ["name", "email", "password", "isAdmin"])
+  );
   const salt = await bcrypt.genSalt(10);
   users.password = await bcrypt.hash(users.password, salt);
   await users.save();
@@ -30,7 +30,7 @@ router.post("/", async (req, res) => {
   res.send(lodash.pick(users, ["name", "email"]));
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", authMiddleware, async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
@@ -50,7 +50,7 @@ router.put("/:id", async (req, res) => {
   res.send(users);
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authMiddleware, async (req, res) => {
   const customer = await Users.findByIdAndRemove(req.params.id);
 
   if (!customer)
@@ -61,7 +61,7 @@ router.delete("/:id", async (req, res) => {
   res.send(customer);
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", authMiddleware, async (req, res) => {
   const customer = await Users.findById(req.params.id);
 
   if (!customer)

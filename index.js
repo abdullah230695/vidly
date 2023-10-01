@@ -1,17 +1,23 @@
+require("express-async-errors");
+const winston = require("winston");
 //Setting the environment variables in nodejs
 const dotenv = require("dotenv");
 dotenv.config({ path: "./config/config.env" });
 
+const error = require("./middleware/error");
 const database = require("./database/database");
 const express = require("express");
 const app = express();
 const apiRouter = require("./routes/apiRoutes");
 
+winston.add(winston.transports.File, { filename: "logfile.log" });
 app.use(express.json());
+
+app.use("/api", apiRouter);
 
 database.connectMangoose();
 
-app.use("/api", apiRouter);
+app.use(error);
 
 const port = process.env.PORT || 3000;
 
