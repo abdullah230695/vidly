@@ -2,9 +2,10 @@ const authMiddleware = require("../middleware/auth");
 const adminMiddleware = require("../middleware/admin");
 const { Genre, validate } = require("../models/genre");
 const express = require("express");
+const mongoose = require("mongoose");
 const router = express.Router();
 
-router.use(authMiddleware);
+// router.use(authMiddleware);
 
 router.get("/", async (req, res) => {
   const genres = await Genre.find().sort("name");
@@ -49,6 +50,7 @@ router.delete("/:id", adminMiddleware, async (req, res) => {
 });
 
 router.get("/:id", async (req, res) => {
+  if (!checkIdIsValid(req.params.id)) return res.status(404).send("Invalid ID");
   const genre = await Genre.findById(req.params.id);
 
   if (!genre)
@@ -56,5 +58,10 @@ router.get("/:id", async (req, res) => {
 
   res.send(genre);
 });
+
+function checkIdIsValid(id) {
+  let isValid = mongoose.Types.ObjectId.isValid(id);
+  return isValid;
+}
 
 module.exports = router;
