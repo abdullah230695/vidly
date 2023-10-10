@@ -4,7 +4,7 @@
   "description": "Backend of shalla_vidly",
   "main": "index.js",
   "scripts": {
-    "test": "jest --watchAll --verbose",
+    "test": "jest --watchAll --verbose --coverage",
     "start": "nodemon index.js"
   },
   "author": "shalla",

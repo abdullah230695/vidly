@@ -5,7 +5,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
 
-// router.use(authMiddleware);
+router.use(authMiddleware);
 
 router.get("/", async (req, res) => {
   const genres = await Genre.find().sort("name");
