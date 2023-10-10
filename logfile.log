@@ -190,3 +190,6 @@
 {"level":"info","message":"Running Environment :  test","timestamp":"2023-10-08T07:06:09.324Z"}
 {"level":"info","message":"Server started on port 3000","timestamp":"2023-10-08T07:06:09.355Z"}
 {"level":"info","message":"database connected : mongodb://127.0.0.1/vidly","timestamp":"2023-10-08T07:06:09.434Z"}
+{"level":"info","message":"Running Environment :  production","timestamp":"2023-10-10T16:22:19.142Z"}
+{"level":"info","message":"Server started on port 3000","timestamp":"2023-10-10T16:22:19.156Z"}
+{"level":"info","message":"database connected : mongodb://127.0.0.1/vidly","timestamp":"2023-10-10T16:22:19.191Z"}
